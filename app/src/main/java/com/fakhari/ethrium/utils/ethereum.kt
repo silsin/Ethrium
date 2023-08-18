@@ -2,8 +2,11 @@ package com.fakhari.ethrium.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.fakhari.ethrium.MyApp
 import org.web3j.crypto.Bip39Wallet
+import org.web3j.crypto.ECKeyPair
 import org.web3j.crypto.MnemonicUtils
+import org.web3j.crypto.Sign
 import java.nio.file.Files
 import java.security.SecureRandom
 
@@ -22,6 +25,10 @@ class ethereum {
     fun GenerateAddress(mnemonic:String): Bip39Wallet? {
         val tempFile = Files.createTempFile(null, null).toFile()
        return Bip39Wallet(tempFile.name, mnemonic);
+    }
+
+    fun SignMessage(message : String): Sign.SignatureData? {
+       return Sign.signMessage(message.toByteArray(),MyApp.ecKeyPair)
     }
 
 }

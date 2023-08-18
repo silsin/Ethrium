@@ -8,14 +8,16 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.fakhari.ethrium.R
 import com.fakhari.ethrium.databinding.FragmentSecondBinding
+import com.fakhari.ethrium.utils.ethereum
+import org.web3j.crypto.ECKeyPair
+import org.web3j.crypto.Sign
+import java.math.BigInteger
 
-/**
- * A simple [Fragment] subclass as the second destination in the navigation.
- */
-class SecondFragment : Fragment() {
+
+class SecondFragment : Fragment(),View.OnClickListener {
 
     private var _binding: FragmentSecondBinding? = null
-
+    private var simpleMessage : String = ""
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -33,13 +35,37 @@ class SecondFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonSecond.setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+        binding.SignAMessage.setOnClickListener {
+            signMessage()
         }
+        InitBundle()
+         InitView()
+
+
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    //init view
+    private  fun InitView(){
+        binding.messageData.setText(simpleMessage)
+        binding.SignAMessage.setOnClickListener(this)
+    }
+    //get data from pervius fragment
+    private fun InitBundle(){
+        simpleMessage = arguments?.getString("sampleMessage").toString()
+    }
+    private fun  signMessage(){
+     var signMessage =  ethereum().SignMessage(simpleMessage)
+        binding?.signData?.text = signMessage?.s?.joinToString(" ")
+        binding?.nonceData?.text = signMessage?.v?.joinToString(" ")
+    }
+
+    override fun onClick(p0: View?) {
+      signMessage()
     }
 }

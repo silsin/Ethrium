@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.fakhari.ethrium.MyApp
 import com.fakhari.ethrium.R
 import com.fakhari.ethrium.databinding.FragmentFirstBinding
 import com.fakhari.ethrium.utils.ethereum
@@ -17,7 +19,7 @@ import org.web3j.crypto.WalletUtils
 class FirstFragment : Fragment() , View.OnClickListener {
 
     private var _binding: FragmentFirstBinding? = null
-
+    private var _bundle : Bundle? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -47,6 +49,7 @@ class FirstFragment : Fragment() , View.OnClickListener {
     //initialize the view actions (regenerate and sign)
     private fun  initView(){
         binding.reGenerate.setOnClickListener(this)
+        binding.SignAMessage.setOnClickListener(this)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -56,10 +59,16 @@ class FirstFragment : Fragment() , View.OnClickListener {
         var wallet =  ethereum().GenerateAddress(data!!)
         val credentials: Credentials = WalletUtils.loadBip39Credentials("", wallet!!.mnemonic)
 
+        //setup global key
+        MyApp.ecKeyPair = credentials.ecKeyPair
+
         //data setter to view
         binding.privateData.text = credentials.ecKeyPair.privateKey.toString()
         binding.addressData.text = credentials.address
         binding.mnemonicData.text = data
+
+        //bundle message to send anothe fragment
+        _bundle = bundleOf("sampleMessage" to data)
     }
 
     override fun onClick(p0: View?) {
@@ -68,7 +77,7 @@ class FirstFragment : Fragment() , View.OnClickListener {
                Regenrate()
            }
            R.id.Sign_a_message->{
-               findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+               findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment,_bundle)
            }
        }
 
