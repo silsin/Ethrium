@@ -1,19 +1,19 @@
 package com.fakhari.ethrium.View
 
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.fakhari.ethrium.R
 import com.fakhari.ethrium.databinding.FragmentFirstBinding
 import com.fakhari.ethrium.utils.ethereum
-import org.web3j.crypto.MnemonicUtils
+import org.web3j.crypto.Credentials
+import org.web3j.crypto.WalletUtils
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class FirstFragment : Fragment() , View.OnClickListener {
 
     private var _binding: FragmentFirstBinding? = null
@@ -34,11 +34,8 @@ class FirstFragment : Fragment() , View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.SignAMessage.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-      Regenrate()
+        //generate inital address
+        Regenrate()
         initView()
     }
 
@@ -52,12 +49,16 @@ class FirstFragment : Fragment() , View.OnClickListener {
         binding.reGenerate.setOnClickListener(this)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun Regenrate(){
+        //data generator
         val data = ethereum().CreateMneminicKet()
-        try {
-            var wallet = data?.let { ethereum().GenerateAddress("abcd", it) }
-        }catch (e:Exception){
-        }
+        var wallet =  ethereum().GenerateAddress(data!!)
+        val credentials: Credentials = WalletUtils.loadBip39Credentials("", wallet!!.mnemonic)
+
+        //data setter to view
+        binding.privateData.text = credentials.ecKeyPair.privateKey.toString()
+        binding.addressData.text = credentials.address
         binding.mnemonicData.text = data
     }
 
@@ -65,6 +66,9 @@ class FirstFragment : Fragment() , View.OnClickListener {
        when(p0?.id){
            R.id.re_generate->{
                Regenrate()
+           }
+           R.id.Sign_a_message->{
+               findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
            }
        }
 

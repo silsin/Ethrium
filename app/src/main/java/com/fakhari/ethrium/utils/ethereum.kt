@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import org.web3j.crypto.Bip39Wallet
 import org.web3j.crypto.MnemonicUtils
-import org.web3j.crypto.WalletUtils
+import java.nio.file.Files
 import java.security.SecureRandom
 
 
@@ -18,8 +18,10 @@ class ethereum {
         SecureRandom.getInstanceStrong().nextBytes(bytes)
         return MnemonicUtils.generateMnemonic(bytes)
    }
-    fun GenerateAddress(password:String,mnemonic:String): Bip39Wallet? {
-      return  WalletUtils.generateBip39WalletFromMnemonic(password,mnemonic,null);
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun GenerateAddress(mnemonic:String): Bip39Wallet? {
+        val tempFile = Files.createTempFile(null, null).toFile()
+       return Bip39Wallet(tempFile.name, mnemonic);
     }
 
 }

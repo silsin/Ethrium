@@ -8,4 +8,6 @@
     <string name="previous">Sign</string>
     <string name="re_generate">Re-Generate</string>
  <string name="mnemonic">Mnemonic:</string>
+    <string name="address">Address:</string>
+    <string name="private_str">Private:</string>
 </resources>
